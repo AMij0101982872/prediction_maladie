@@ -13,7 +13,7 @@ X = data.drop("chd", axis=1)
 y = data["chd"]
 
 # Définir les colonnes numériques et catégorielles
-numeric_features = ["sbp", "tobacco", "ldl", "adiposity", "typea", "obesity", "alcohol", "age"]
+numeric_features = ["sbp", "tobacco", "ldl", "adiposity", "typea", "obesity", "alcohol", "age","chol"]
 categorical_features = ["famhist"]
 
 # Créer les transformateurs
@@ -42,3 +42,4 @@ pipe_knn.fit(X, y)
 # Sauvegarder le pipeline entraîné
 joblib.dump(pipe_knn, "model.pkl")
 print("Modèle sauvegardé avec succès sous le nom Model.pkl !")
+
