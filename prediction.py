@@ -1,16 +1,19 @@
-
-
 import streamlit as st
 import joblib
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+
 # Importer TOUTES les classes utilisées dans le pipeline
 from imblearn.pipeline import Pipeline as ImbPipeline
 from imblearn.over_sampling import SMOTE
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.neighbors import KNeighborsClassifier
+
+# Charger le modèle
+model = joblib.load("chd_model.pkl")
+
 
 # =========================
 # Charger le modèle
