@@ -1,4 +1,4 @@
-streamlit
+streamlit==1.6.1
 rich
 numpy
 pandas
