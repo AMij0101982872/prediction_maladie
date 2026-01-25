@@ -40,6 +40,7 @@ pipe_knn = ImbPipeline([
 pipe_knn.fit(X, y)
 
 # Sauvegarder le pipeline entraîné
-joblib.dump(pipe_knn, "model.pkl")
+joblib.dump(pipe_knn, "chd_model.pkl")
 print("Modèle sauvegardé avec succès sous le nom Model.pkl !")
+
 
