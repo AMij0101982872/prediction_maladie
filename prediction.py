@@ -9,7 +9,7 @@ import plotly.express as px
 # =========================
 # Charger le modèle
 # =========================
-model = joblib.load("model.pkl")
+model = joblib.load("chd_model.pkl")
 
 # =========================
 # Page Config
