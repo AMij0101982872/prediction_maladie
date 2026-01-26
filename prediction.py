@@ -11,9 +11,6 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.neighbors import KNeighborsClassifier
 
-# Charger le modèle
-model = joblib.load("chd_model.pkl")
-
 
 # =========================
 # Charger le modèle
