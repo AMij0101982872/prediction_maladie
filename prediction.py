@@ -1,6 +1,7 @@
 import streamlit as st
 import joblib
-try: model = joblib.load("chd_model.pkl")
+try: 
+    model = joblib.load("chd_model.pkl")
     st.success("✅ Modèle chargé avec succès") 
 except FileNotFoundError:
     st.error("❌ Fichier chd_model.pkl introuvable. Vérifie le chemin.") 
