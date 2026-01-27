@@ -1,8 +1,8 @@
-streamlit
+streamlit==1.40.0
 numpy
 pandas
-joblib
-scikit-learn
+joblib==1.4.2
+scikit-learn==1.6.1
 imbalanced-learn
 plotly
 altair
