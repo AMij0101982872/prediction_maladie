@@ -1,13 +1,5 @@
 import streamlit as st
 import joblib
-try: 
-    model = joblib.load("chd_model.pkl")
-    st.success("✅ Modèle chargé avec succès") 
-except FileNotFoundError:
-    st.error("❌ Fichier chd_model.pkl introuvable. Vérifie le chemin.") 
-except Exception as e:
-    st.error(f"⚠️ Erreur lors du chargement du modèle : {e}")
-
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
@@ -23,7 +15,7 @@ from sklearn.neighbors import KNeighborsClassifier
 # =========================
 # Charger le modèle
 # =========================
-model = joblib.load("chd_model.pkl")
+model = joblib.load("Model1.pkl")
 
 # =========================
 # Page Config
