@@ -3,9 +3,9 @@ import joblib
 try: model = joblib.load("chd_model.pkl")
     st.success("✅ Modèle chargé avec succès") 
 except FileNotFoundError:
-st.error("❌ Fichier chd_model.pkl introuvable. Vérifie le chemin.") 
+    st.error("❌ Fichier chd_model.pkl introuvable. Vérifie le chemin.") 
 except Exception as e:
-st.error(f"⚠️ Erreur lors du chargement du modèle : {e}")
+    st.error(f"⚠️ Erreur lors du chargement du modèle : {e}")
 
 import pandas as pd
 import plotly.graph_objects as go
