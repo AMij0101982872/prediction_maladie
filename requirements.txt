@@ -1,8 +1,8 @@
-streamlit==1.19.0
-numpy==2.2.6
-pandas==2.3.3
-joblib==1.5.3
-scikit-learn==1.6.1
-imbalanced-learn==0.14.1
-plotly==6.5.2
-altair==5.0.1
+streamlit
+numpy
+pandas
+joblib
+scikit-learn
+imbalanced-learn
+plotly
+altair
