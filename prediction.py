@@ -15,7 +15,7 @@ from sklearn.neighbors import KNeighborsClassifier
 # =========================
 # Charger le modèle
 # =========================
-model = joblib.load("Model1.pkl")
+model = joblib.load(r"C:\Users\hp\Model1.pkl")
 
 # =========================
 # Page Config
