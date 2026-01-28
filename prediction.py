@@ -1,168 +1,240 @@
 import streamlit as st
-import joblib
+from PIL import Image
 import pandas as pd
+import joblib
 import plotly.graph_objects as go
 import plotly.express as px
 
-# Importer TOUTES les classes utilisées dans le pipeline
-from imblearn.pipeline import Pipeline as ImbPipeline
-from imblearn.over_sampling import SMOTE
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.neighbors import KNeighborsClassifier
-
+# =========================
+# Configuration page
+# =========================
+st.set_page_config(
+    page_title="Évaluation du risque cardiovasculaire",
+    layout="wide"
+)
 
 # =========================
 # Charger le modèle
 # =========================
-model = joblib.load("Model1.pkl")
-
-
-# =========================
-# Page Config
-# =========================
-st.set_page_config(
-    page_title="Santé Cardiaque ",
-    page_icon="🫀",
-    layout="wide"  # Utilise toute la largeur
-)
+model = joblib.load("chd_model.pkl")
 
 # =========================
-# HEADER LARGE
+# HEADER AVEC IMAGE À GAUCHE
 # =========================
-st.markdown("""
+import streamlit as st
+from PIL import Image
+import base64
+from io import BytesIO
+
+# =========================
+# Charger l'image
+# =========================
+image = Image.open("medecine-globale.jpg")  # Nom exact du fichier
+
+# Convertir l'image en base64 pour l'inclure dans le div
+buffered = BytesIO()
+image.save(buffered, format="PNG")
+img_str = base64.b64encode(buffered.getvalue()).decode()
+
+# =========================
+# Header large avec image à gauche
+# =========================
+st.markdown(f"""
 <div style="
     width:100%;
     padding:30px;
-    text-align:center;
-    background: linear-gradient(to right, #e63946, #f1faee);
+    border-radius:12px;
+    background: linear-gradient(135deg, #2c3e50, #4b79a1);
     color:white;
-    border-radius:0px;
-    box-shadow:0px 8px 20px rgba(0,0,0,0.2);
-    font-family: 'Arial';">
-    <h1 style='margin:0; font-size:36px;'>🫀 Dashboard Santé Cardiaque</h1>
-    <p style='margin:5px; font-size:16px; color:#f1faee;'>Analyse complète de votre risque cardiaque</p>
-            
+    box-shadow:0px 5px 15px rgba(0,0,0,0.25);
+    display:flex;
+    align-items:center;
+">
+    <img src="data:image/png;base64,{img_str}" style="width:250px; margin-right:30px; border-radius:10px;"/>
+    <div style="flex-grow:1;">
+        <h1 style="margin:0; font-size:50px;">Évaluation du risque cardiovasculaire</h1>
+        <p style="margin-top:8px; font-size:16px; opacity:0.9;">
+            Application d’aide à la décision basée sur un modèle de Machine Learning
+            et des indicateurs cliniques
+        </p>
+    </div>
 </div>
-            
 """, unsafe_allow_html=True)
 
-st.write("---")
 
 # =========================
-# FORMULAIRE FIXE SUR TOUTE LA LARGEUR
+# Formulaire patient
 # =========================
-st.subheader("📝 Informations du patient")
-col1, col2, col3 = st.columns([1,1,1])
+st.subheader("Données du patient")
+
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    age = st.number_input("Âge", 20, 90, 30)
-    sbp = st.number_input("Pression systolique (SBP)", 90, 200, 120)
-    chol = st.number_input("Cholestérol total", 120, 350, 200)
+    age = st.number_input("Âge (années)", 20, 90, 30)
+    sbp = st.number_input("Pression systolique (mmHg)", 90, 200, 120)
+    chol = st.number_input("Cholestérol total (mg/dL)", 120, 350, 200)
 
 with col2:
-    ldl = st.number_input("LDL cholestérol", 50, 250, 130)
-    adiposity = st.number_input("Adiposity (%)", 10.0, 45.0, 20.0)
-    obesity = st.number_input("BMI", 15.0, 50.0, 25.0)
+    ldl = st.number_input("LDL cholestérol (mg/dL)", 50, 250, 130)
+    adiposity = st.number_input("Adiposité (%)", 10.0, 45.0, 20.0)
+    bmi = st.number_input("Indice de masse corporelle (BMI)", 15.0, 50.0, 25.0)
 
 with col3:
     tobacco = st.number_input("Tabac", 0.0, 40.0, 0.0)
     alcohol = st.number_input("Alcool", 0.0, 50.0, 0.0)
-    typea = st.number_input("Type A (stress)", 0, 100, 50)
-    famhist_text = st.selectbox("Antécédents familiaux", ["Absent", "Present"])
+    typea = st.number_input("Stress (Type A)", 0, 100, 50)
+    famhist = st.selectbox("Antécédents familiaux", ["Absent", "Present"])
 
+# Préparer les données pour le modèle
 data = pd.DataFrame([{
     "sbp": sbp,
     "tobacco": tobacco,
     "ldl": ldl,
     "adiposity": adiposity,
     "typea": typea,
-    "obesity": obesity,
+    "obesity": bmi,
     "alcohol": alcohol,
     "age": age,
     "chol": chol,
-    "famhist": famhist_text
+    "famhist": famhist
 }])
 
-st.write("---")
+st.divider()
 
 # =========================
-# BOUTON PREDICTION FIXE
+# Bouton prédiction
 # =========================
-if st.button(" Predire"):
-    try:
-        pred = model.predict(data)[0]
-        proba = model.predict_proba(data)[0][1]
+if st.button("Lancer l’évaluation du risque", use_container_width=True):
 
-        # =========================
-        # Section Résultat
-        # =========================
-        st.subheader("📊 Risque global")
-        fig_risk = go.Figure(go.Pie(
-            values=[proba, 1-proba],
-            labels=["Risque", "Pas de risque"],
-            hole=0.6,
-            marker_colors=["#e63946", "#2a9d8f"],
-            textinfo="percent"
-        ))
-        fig_risk.update_layout(showlegend=False, margin=dict(t=0,b=0,l=0,r=0))
-        st.plotly_chart(fig_risk, use_container_width=True)
+    pred = model.predict(data)[0]
+    proba = model.predict_proba(data)[0][1]
 
-        # Carte résultat
-        color_bg = "#ffe5e5" if pred==1 else "#e5ffe5"
-        color_text = "#e63946" if pred==1 else "#2a9d8f"
-        status_text = "⚠️ Risque détecté" if pred==1 else "✅ Aucun risque"
+    # Définir couleurs et labels dynamiques
+    if proba < 0.30:
+        color_metric = "green"
+        risk_label = "Risque faible"
+        alert_label = "Standard"
+    elif proba < 0.60:
+        color_metric = "orange"
+        risk_label = "Risque modéré"
+        alert_label = "Surveillance recommandée"
+    else:
+        color_metric = "red"
+        risk_label = "Risque élevé"
+        alert_label = "Surveillance renforcée"
 
-        st.markdown(f"""
-        <div style="
-            width:100%;
-            padding:20px;
-            border-radius:15px;
-            background-color:{color_bg};
-            color:{color_text};
-            font-size:20px;
-            text-align:center;
-            box-shadow:0px 5px 20px rgba(0,0,0,0.15);">
-            <b>{status_text}</b><br>
-            Probabilité : <b>{proba:.2%}</b>
-        </div>
-        """, unsafe_allow_html=True)
+    # =========================
+    # Synthèse du résultat
+    # =========================
+    st.subheader("Synthèse du résultat")
+    c1, c2, c3 = st.columns(3)
 
-        st.write("---")
+    # Probabilité détaillée à 2 décimales
+    c1.metric(
+        label="Probabilité estimée",
+        value=f"{proba*100:.2f}%",
+        delta=None
+    )
 
-        # =========================
-        # Section Facteurs de risque en largeur
-        # =========================
-        st.subheader("🔎 Facteurs de risque")
-        risk_factors = {
-            "SBP": sbp / 200,
-            "Chol": chol / 350,
-            "LDL": ldl / 250,
-            "BMI": obesity / 50,
-            "Adiposity": adiposity / 45,
+    # Classification dynamique
+    c2.markdown(
+        f"<h3 style='color:{color_metric}; margin:0'>{risk_label}</h3>",
+        unsafe_allow_html=True
+    )
+
+    # Niveau d’alerte dynamique
+    c3.markdown(
+        f"<h3 style='color:{color_metric}; margin:0'>{alert_label}</h3>",
+        unsafe_allow_html=True
+    )
+
+    st.divider()
+
+    # =========================
+    # Pie chart du risque
+    # =========================
+    fig = go.Figure(go.Pie(
+    labels=["Risque cardiovasculaire", "Risque faible"],
+    values=[proba, 1 - proba],
+    hole=0.6,
+    marker=dict(colors=[color_metric, "#ecf0f1"])
+))
+
+
+    fig.update_layout(
+        title="Distribution du risque",
+        title_x=0.5,
+        margin=dict(t=40, b=20)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # =========================
+    # Onglets
+    # =========================
+    tab1, tab2, tab3 = st.tabs(
+        ["Interprétation clinique", "Facteurs de risque", "Recommandations"]
+    )
+
+    # -------- Tab 1: Interprétation
+    with tab1:
+        st.image("coeur.png", width=200, caption="prenez soin de vos coeur ")
+        if proba < 0.30:
+            st.success(
+                "Le risque cardiovasculaire est faible. Les indicateurs cliniques sont rassurants."
+            )
+        elif proba < 0.60:
+            st.warning(
+                "Le risque cardiovasculaire est modéré. Une surveillance médicale régulière est recommandée."
+            )
+        else:
+            st.error(
+                "Le risque cardiovasculaire est élevé. Une consultation médicale est fortement conseillée."
+            )
+
+    # -------- Tab 2: Facteurs de risque
+    with tab2:
+        factors = {
+            "Pression systolique": sbp / 200,
+            "Cholestérol total": chol / 350,
+            "LDL cholestérol": ldl / 250,
+            "BMI": bmi / 50,
+            "Adiposité": adiposity / 45,
             "Tabac": tobacco / 40,
             "Alcool": alcohol / 50,
-            "Type A": typea / 100
+            "Stress": typea / 100
         }
 
         fig_bar = px.bar(
-            x=list(risk_factors.keys()),
-            y=list(risk_factors.values()),
-            color=list(risk_factors.values()),
-            color_continuous_scale=px.colors.sequential.Reds,
-            text=[f"{v*100:.0f}%" for v in risk_factors.values()]
+            x=list(factors.keys()),
+            y=list(factors.values()),
+            text=[f"{v*100:.2f} %" for v in factors.values()],
+            color=list(factors.values()),
+            color_continuous_scale=["green", "orange", "red"]
         )
+
         fig_bar.update_layout(
-            showlegend=False,
-            yaxis=dict(title="Niveau relatif"),
-            xaxis=dict(title="Facteurs"),
-            margin=dict(t=10,b=10,l=10,r=10)
+            yaxis_title="Niveau relatif normalisé",
+            xaxis_title="Facteurs contributifs",
+            showlegend=False
         )
+
         st.plotly_chart(fig_bar, use_container_width=True)
 
-        st.info("💡 Maintenez une alimentation saine et activité physique régulière.")
+    # -------- Tab 3: Recommandations
+    with tab3:
+        st.info(
+            "- Surveillance régulière de la pression artérielle\n"
+            "- Contrôle du cholestérol et du LDL\n"
+            "- Activité physique adaptée\n"
+            "- Réduction du tabac et de l’alcool\n"
+            "- Suivi médical périodique"
+        )
 
-    except ValueError as e:
-        st.error(f"Erreur : {e}")
-        st.warning("⚠️ Vérifie toutes les valeurs.")
-
+    st.divider()
+    st.caption(
+        "Cet outil fournit une estimation probabiliste basée sur un modèle "
+        "de Machine Learning. Il ne remplace pas un avis médical professionnel."
+    )
