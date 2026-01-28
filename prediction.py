@@ -54,8 +54,7 @@ st.markdown(f"""
     <div style="flex-grow:1;">
         <h1 style="margin:0; font-size:50px;">Évaluation du risque cardiovasculaire</h1>
         <p style="margin-top:8px; font-size:16px; opacity:0.9;">
-            Application d’aide à la décision basée sur un modèle de Machine Learning
-            et des indicateurs cliniques
+           Outil d’évaluation du risque cardiovasculaire basé sur des indicateurs cliniques et un modèle prédictif avancé.
         </p>
     </div>
 </div>
