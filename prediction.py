@@ -179,7 +179,7 @@ if st.button("Lancer l’évaluation du risque", use_container_width=True):
 
     # -------- Tab 1: Interprétation
     with tab1:
-        st.image("coeur.png", width=200, caption="prenez soin de vos coeur ")
+        st.image("coeur.png", width=200, caption="prenez soin de votre coeur ")
         if proba < 0.30:
             st.success(
                 "Le risque cardiovasculaire est faible. Les indicateurs cliniques sont rassurants."
