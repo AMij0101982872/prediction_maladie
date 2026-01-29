@@ -139,3 +139,4 @@ Machine Learning & Data Science
 
 
  *Projet prêt pour GitHub /
+ https://predictionmaladie-chd.streamlit.app/
